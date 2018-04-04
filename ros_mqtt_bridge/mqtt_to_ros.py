@@ -6,10 +6,10 @@ import json
 import rospy
 import paho.mqtt.client as mqtt
 
-from attr_dict import AttrDict
+from ros_mqtt_bridge.attr_dict import AttrDict
 
 
-class MqttToROS(object):
+class MQTTToROS(object):
 
     DEFAULT_NODE_NAME = "mqtt_to_ros"
 
@@ -27,7 +27,7 @@ class MqttToROS(object):
         message_class = eval("message_module." + message_class_name)
         self.__ros_publisher = rospy.Publisher(to_topic, message_class, queue_size=queue_size)
         if node_name is None:
-            rospy.init_node(MqttToROS.DEFAULT_NODE_NAME, anonymous=True)
+            rospy.init_node(MQTTToROS.DEFAULT_NODE_NAME, anonymous=True)
         else:
             rospy.init_node(node_name)
         self.__rospy_rate = rospy.Rate(rospy_rate)
@@ -47,26 +47,9 @@ class MqttToROS(object):
         self.__ros_publisher.publish(**message_attrdict)
         self.__rospy_rate.sleep()
 
-    def start(self, dt=1.0):
+    def start(self):
         self.__client.loop_start()
         try:
             rospy.spin()
         except rospy.ROSInterruptException:
             pass
-
-from argparse import ArgumentParser
-
-parser = ArgumentParser()
-parser.add_argument("-H", "--host", type=str, default="localhost", help="mqtt broker host")
-parser.add_argument("-P", "--port", type=int, default=1883, help="mqtt broker port")
-parser.add_argument("-FT", "--from_topic", type=str, required=True, help="from topic")
-parser.add_argument("-TT", "--to_topic", type=str, required=True, help="to topic")
-parser.add_argument("-MMN", "--message_module_name", type=str, required=True, help="message module name")
-parser.add_argument("-MCN", "--message_class_name", type=str, required=True, help="message class name")
-args = parser.parse_args()
-
-
-if __name__ == '__main__':
-    mqtt_to_ros = MqttToROS(
-        args.host, args.port, args.from_topic, args.to_topic, args.message_module_name, args.message_class_name)
-    mqtt_to_ros.start()
