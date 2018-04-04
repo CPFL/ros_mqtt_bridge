@@ -18,7 +18,6 @@ class MqttToROS(object):
             node_name=None, keepalive=60, queue_size=1, rospy_rate=10
     ):
         self.__from_topic = from_topic
-        self.__to_topic = to_topic
         self.__client = mqtt.Client(protocol=mqtt.MQTTv311)
         self.__client.on_connect = self.__on_connect
         self.__client.on_message = self.__on_message
@@ -50,8 +49,10 @@ class MqttToROS(object):
 
     def start(self, dt=1.0):
         self.__client.loop_start()
-        rospy.spin()
-
+        try:
+            rospy.spin()
+        except rospy.ROSInterruptException:
+            pass
 
 from argparse import ArgumentParser
 
