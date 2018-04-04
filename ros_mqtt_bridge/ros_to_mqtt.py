@@ -43,4 +43,4 @@ class ROSToMQTT(object):
             except rospy.ROSInterruptException:
                 break
 
-        self.__rospy_rate.sleep()
+            self.__rospy_rate.sleep()
