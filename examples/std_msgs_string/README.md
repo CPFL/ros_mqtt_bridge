@@ -1,4 +1,4 @@
-# ROS-MQTT-BRIDGE [std_msg.String](http://docs.ros.org/api/std_msgs/html/msg/String.html) example
+# ROS-MQTT-BRIDGE [std_msgs/String](http://docs.ros.org/api/std_msgs/html/msg/String.html) example
 
 ## Requirements
 
