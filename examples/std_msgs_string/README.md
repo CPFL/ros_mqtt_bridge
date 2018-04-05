@@ -8,7 +8,7 @@
 
 launch bridges
 ```
-$ python std_msg_string.py
+$ python std_msgs_string.py
 ```
 
 launch subscribers
