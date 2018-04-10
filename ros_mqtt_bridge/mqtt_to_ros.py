@@ -45,7 +45,6 @@ class MQTTToROS(object):
         message_dict = json.loads(message_data.payload.decode("utf-8"))
         message_attrdict = AttrDict.set_recursively(message_dict)
         self.__ros_publisher.publish(**message_attrdict)
-        self.__rospy_rate.sleep()
 
     def start(self):
         self.__client.loop_start()
