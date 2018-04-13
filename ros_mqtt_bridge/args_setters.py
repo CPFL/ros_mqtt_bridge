@@ -14,7 +14,9 @@ class ArgsSetters(object):
             "ros": {
                 "data_class": self.get_data_class_from_message_type(message_type),
                 "init_node": {},
-                "publisher": {},
+                "publisher": {
+                    "queue_size": 1
+                },
                 "wait_for_message": {},
                 "rate": {
                     "hz": 2
@@ -22,7 +24,7 @@ class ArgsSetters(object):
             },
             "mqtt": {
                 "client": {},
-                "connection": {
+                "connect": {
                     "host": ArgsSetters.DEFAULT_HOST,
                 },
                 "publish": {},

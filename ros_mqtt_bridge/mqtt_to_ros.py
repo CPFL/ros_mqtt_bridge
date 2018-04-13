@@ -18,11 +18,7 @@ class MQTTToROS(ArgsSetters):
         self.__mqtt_client = None
         self.__ros_publisher = None
 
-        self.args["ros"]["init_node"]["name"] = "_".join([
-            "bridge", "mqtt", from_topic.replace("/", "."),
-            "to", "ros", to_topic.replace("/", ".")
-        ])
-        self.args["mqtt"]["subscribe"] = from_topic
+        self.args["mqtt"]["subscribe"]["topic"] = from_topic
         self.args["ros"]["publisher"]["name"] = to_topic
         self.args["ros"]["publisher"]["data_class"] = self.args["ros"]["data_class"]
 
@@ -41,6 +37,9 @@ class MQTTToROS(ArgsSetters):
         self.__ros_publisher.publish(**message_attrdict)
 
     def connect_ros(self):
+        if "name" not in self.args["ros"]["init_node"]:
+            self.args["ros"]["init_node"]["name"] = "ros_mqtt_bridge"
+            self.args["ros"]["init_node"]["anonymous"] = True
         self.__ros_publisher = rospy.Publisher(**self.args["ros"]["publisher"])
         rospy.init_node(**self.args["ros"]["init_node"])
 

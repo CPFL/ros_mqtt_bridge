@@ -17,16 +17,14 @@ class ROSToMQTT(ArgsSetters):
 
         self.__mqtt_client = None
 
-        self.args["ros"]["init_node"]["name"] = "_".join([
-            "bridge", "ros", from_topic.replace("/", "."),
-            "to", "mqtt", to_topic.replace("/", ".")
-        ])
-
         self.args["mqtt"]["publish"]["topic"] = to_topic
         self.args["ros"]["wait_for_message"]["topic"] = from_topic
         self.args["ros"]["wait_for_message"]["topic_type"] = self.args["ros"]["data_class"]
 
     def connect_ros(self):
+        if "name" not in self.args["ros"]["init_node"]:
+            self.args["ros"]["init_node"]["name"] = "ros_mqtt_bridge"
+            self.args["ros"]["init_node"]["anonymous"] = True
         rospy.init_node(**self.args["ros"]["init_node"])
 
     def connect_mqtt(self):
