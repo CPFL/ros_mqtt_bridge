@@ -7,40 +7,51 @@ import json
 import rospy
 import paho.mqtt.client as mqtt
 
+from ros_mqtt_bridge.args_setters import ArgsSetters
 
-class ROSToMQTT(object):
 
-    DEFAULT_NODE_NAME = "ros_to_mqtt"
+class ROSToMQTT(ArgsSetters):
 
-    def __init__(
-            self, host, port, from_topic, to_topic, message_module_name, message_class_name,
-            node_name=None, keepalive=3600, rospy_rate=10, qos=0
-    ):
-        self.__from_topic = from_topic
-        self.__to_topic = to_topic
-        self.__qos = qos
+    def __init__(self, from_topic, to_topic, message_type):
+        super().__init__(message_type)
 
-        message_module = __import__(message_module_name)
-        self.__message_class = eval("message_module." + message_class_name)
+        self.__mqtt_client = None
 
-        if node_name is None:
-            rospy.init_node(ROSToMQTT.DEFAULT_NODE_NAME, anonymous=True)
-        else:
-            rospy.init_node(node_name)
-        self.__rospy_rate = rospy.Rate(rospy_rate)
+        self.args["ros"]["init_node"]["name"] = "_".join([
+            "bridge", "ros", from_topic.replace("/", "."),
+            "to", "mqtt", to_topic.replace("/", ".")
+        ])
 
-        self.__client = mqtt.Client(protocol=mqtt.MQTTv311)
-        self.__client.connect(host, port=port, keepalive=keepalive)
+        self.args["mqtt"]["publish"]["topic"] = to_topic
+        self.args["ros"]["wait_for_message"]["topic"] = from_topic
+        self.args["ros"]["wait_for_message"]["topic_type"] = self.args["ros"]["data_class"]
+        self.args["ros"]["rate"]["hz"] = 2
+
+        self.__rospy_rate = rospy.Rate(**self.args["ros"]["rate"])
+
+    def connect_ros(self):
+        rospy.init_node(**self.args["ros"]["init_node"])
+
+    def connect_mqtt(self):
+        self.__mqtt_client = mqtt.Client(**self.args["mqtt"]["client"])
+        if self.args["mqtt"]["tls"] is not None:
+            self.set_mqtt_tls()
+        self.__mqtt_client.connect(**self.args["mqtt"]["connect"])
+
+    def set_mqtt_tls(self):
+        self.__mqtt_client.tls_set(**self.args["mqtt"]["tls"])
+        self.__mqtt_client.tls_insecure_set(True)
 
     def start(self):
+        self.connect_mqtt()
+        self.connect_ros()
         while not rospy.is_shutdown():
             try:
-                message_yaml = str(rospy.wait_for_message(self.__from_topic, self.__message_class))
-                payload = json.dumps(yaml.load(message_yaml))
-                self.__client.publish(self.__to_topic, payload=payload, qos=self.__qos)
+                message_yaml = str(rospy.wait_for_message(**self.args["ros"]["wait_for_message"]))
+                self.args["mqtt"]["publish"]["payload"] = json.dumps(yaml.load(message_yaml))
+                self.__mqtt_client.publish(**self.args["mqtt"]["publish"])
+                self.__rospy_rate.sleep()
             except rospy.ROSException:
                 pass
             except rospy.ROSInterruptException:
                 break
-
-            self.__rospy_rate.sleep()

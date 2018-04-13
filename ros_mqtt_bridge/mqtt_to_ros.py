@@ -6,38 +6,32 @@ import json
 import rospy
 import paho.mqtt.client as mqtt
 
+from ros_mqtt_bridge.args_setters import ArgsSetters
 from ros_mqtt_bridge.attr_dict import AttrDict
 
 
-class MQTTToROS(object):
+class MQTTToROS(ArgsSetters):
 
-    DEFAULT_NODE_NAME = "mqtt_to_ros"
+    def __init__(self, from_topic, to_topic, message_type):
+        super().__init__(message_type)
 
-    def __init__(
-            self, host, port, from_topic, to_topic, message_module_name, message_class_name,
-            node_name=None, keepalive=60, queue_size=1, rospy_rate=10
-    ):
-        self.__from_topic = from_topic
-        self.__client = mqtt.Client(protocol=mqtt.MQTTv311)
-        self.__client.on_connect = self.__on_connect
-        self.__client.on_message = self.__on_message
-        self.__client.connect(host, port=port, keepalive=keepalive)
+        self.__mqtt_client = None
+        self.__ros_publisher = None
 
-        message_module = __import__(message_module_name)
-        message_class = eval("message_module." + message_class_name)
-        self.__ros_publisher = rospy.Publisher(to_topic, message_class, queue_size=queue_size)
-        if node_name is None:
-            rospy.init_node(MQTTToROS.DEFAULT_NODE_NAME, anonymous=True)
-        else:
-            rospy.init_node(node_name)
-        self.__rospy_rate = rospy.Rate(rospy_rate)
+        self.args["ros"]["init_node"]["name"] = "_".join([
+            "bridge", "mqtt", from_topic.replace("/", "."),
+            "to", "ros", to_topic.replace("/", ".")
+        ])
+        self.args["mqtt"]["subscribe"] = from_topic
+        self.args["ros"]["publisher"]["name"] = to_topic
+        self.args["ros"]["publisher"]["data_class"] = self.args["ros"]["data_class"]
 
     def __del__(self):
-        self.__client.disconnect()
+        self.__mqtt_client.disconnect()
 
     def __on_connect(self, _client, _userdata, _flags, response_code):
         if response_code == 0:
-            self.__client.subscribe(self.__from_topic)
+            self.__mqtt_client.subscribe(**self.args["mqtt"]["subscribe"])
         else:
             print('connect status {0}'.format(response_code))
 
@@ -45,10 +39,27 @@ class MQTTToROS(object):
         message_dict = json.loads(message_data.payload.decode("utf-8"))
         message_attrdict = AttrDict.set_recursively(message_dict)
         self.__ros_publisher.publish(**message_attrdict)
-        self.__rospy_rate.sleep()
+
+    def connect_ros(self):
+        self.__ros_publisher = rospy.Publisher(**self.args["ros"]["publisher"])
+        rospy.init_node(**self.args["ros"]["init_node"])
+
+    def connect_mqtt(self):
+        self.__mqtt_client = mqtt.Client(**self.args["mqtt"]["client"])
+        if self.args["mqtt"]["tls"] is not None:
+            self.set_mqtt_tls()
+        self.__mqtt_client.on_connect = self.__on_connect
+        self.__mqtt_client.on_message = self.__on_message
+        self.__mqtt_client.connect(**self.args["mqtt"]["connect"])
+
+    def set_mqtt_tls(self):
+        self.__mqtt_client.tls_set(**self.args["mqtt"]["tls"])
+        self.__mqtt_client.tls_insecure_set(True)
 
     def start(self):
-        self.__client.loop_start()
+        self.connect_ros()
+        self.connect_mqtt()
+        self.__mqtt_client.loop_start()
         try:
             rospy.spin()
         except rospy.ROSInterruptException:
