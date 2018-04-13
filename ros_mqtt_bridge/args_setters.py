@@ -93,6 +93,7 @@ class ArgsSetters(object):
     def set_mqtt_tls_args(
             self, ca_certs=None, certfile=None, keyfile=None, cert_reqs=None, tls_version=PROTOCOL_TLSv1_2,
             ciphers=None):
+        self.args["mqtt"]["tls"] = {}
         self.args["mqtt"]["tls"]["ca_certs"] = ca_certs
         self.args["mqtt"]["tls"]["certfile"] = certfile
         self.args["mqtt"]["tls"]["keyfile"] = keyfile
