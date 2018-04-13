@@ -74,7 +74,7 @@ class ArgsSetters(object):
         self.args["mqtt"]["client"]["protocol"] = protocol
         self.args["mqtt"]["client"]["transport"] = transport
 
-    def set_mqtt_connection_args(self, host, port=1883, keepalive=60, bind_address=""):
+    def set_mqtt_connect_args(self, host, port=1883, keepalive=60, bind_address=""):
         self.args["mqtt"]["connect"]["host"] = host
         self.args["mqtt"]["connect"]["port"] = port
         self.args["mqtt"]["connect"]["keepalive"] = keepalive
