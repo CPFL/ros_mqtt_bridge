@@ -8,15 +8,13 @@ from ros_mqtt_bridge import MQTTToROS, ROSToMQTT
 
 
 def launch_ros_to_mqtt_bridge():
-    ros_to_mqtt = ROSToMQTT(
-        "localhost", 1883, "/ros/test/std_msgs_string", "/mqtt/test/std_msgs_string", "std_msgs.msg", "msg.String")
+    ros_to_mqtt = ROSToMQTT("/ros/test/std_msgs_string", "/mqtt/test/std_msgs_string", "std_msgs/String")
     print("start ros_to_mqtt_bridge.")
     ros_to_mqtt.start()
 
 
 def launch_mqtt_to_ros_bridge():
-    mqtt_to_ros = MQTTToROS(
-        "localhost", 1883, "/mqtt/test/std_msgs_string", "/ros/test/std_msgs_string", "std_msgs.msg", "msg.String")
+    mqtt_to_ros = MQTTToROS("/mqtt/test/std_msgs_string", "/ros/test/std_msgs_string", "std_msgs/String")
     print("start mqtt_to_ros_bridge.")
     mqtt_to_ros.start()
 
