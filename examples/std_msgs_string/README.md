@@ -26,5 +26,5 @@ $ rostopic pub -1 /ros/test/std_msgs_string std_msgs/String "data: 'test text fr
 ```
 
 ```
-$ mosquitto_pub -d -t /mqtt/test/std_msgs_string -m "{'data': 'test text from mqtt'}"
+$ mosquitto_pub -d -t /mqtt/test/std_msgs_string -m '{"data": "test text from mqtt"}'
 ```

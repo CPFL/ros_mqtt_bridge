@@ -9,7 +9,7 @@ ros-mqtt-bridge provides bridge between ROS and MQTT(message serialized by JSON)
 ## Installing
 
 ```console
-pip install git+https://github.com/CPFL/ros_mqtt_bridge.git
+$ pip install -e git+https://github.com/CPFL/ros_mqtt_bridge.git@v0.2#egg=ros_mqtt_bridge
 ```
 
 ## example
