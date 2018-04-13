@@ -22,9 +22,6 @@ class MQTTToROS(ArgsSetters):
         self.args["ros"]["publisher"]["name"] = to_topic
         self.args["ros"]["publisher"]["data_class"] = self.args["ros"]["data_class"]
 
-    def __del__(self):
-        self.__mqtt_client.disconnect()
-
     def __on_connect(self, _client, _userdata, _flags, response_code):
         if response_code == 0:
             self.__mqtt_client.subscribe(**self.args["mqtt"]["subscribe"])
