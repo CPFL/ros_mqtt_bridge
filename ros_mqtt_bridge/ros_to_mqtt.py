@@ -26,8 +26,6 @@ class ROSToMQTT(ArgsSetters):
         self.args["ros"]["wait_for_message"]["topic"] = from_topic
         self.args["ros"]["wait_for_message"]["topic_type"] = self.args["ros"]["data_class"]
 
-        self.__rospy_rate = rospy.Rate(**self.args["ros"]["rate"])
-
     def connect_ros(self):
         rospy.init_node(**self.args["ros"]["init_node"])
 
@@ -44,6 +42,7 @@ class ROSToMQTT(ArgsSetters):
     def start(self):
         self.connect_mqtt()
         self.connect_ros()
+        self.__rospy_rate = rospy.Rate(**self.args["ros"]["rate"])
         while not rospy.is_shutdown():
             try:
                 message_yaml = str(rospy.wait_for_message(**self.args["ros"]["wait_for_message"]))
