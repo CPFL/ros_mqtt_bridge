@@ -13,7 +13,7 @@ from ros_mqtt_bridge.attr_dict import AttrDict
 class MQTTToROS(ArgsSetters):
 
     def __init__(self, from_topic, to_topic, message_type):
-        super().__init__(message_type)
+        super(MQTTToROS, self).__init__(message_type)
 
         self.__mqtt_client = None
         self.__ros_publisher = None

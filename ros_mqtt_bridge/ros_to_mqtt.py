@@ -13,7 +13,7 @@ from ros_mqtt_bridge.args_setters import ArgsSetters
 class ROSToMQTT(ArgsSetters):
 
     def __init__(self, from_topic, to_topic, message_type):
-        super().__init__(message_type)
+        super(ROSToMQTT, self).__init__(message_type)
 
         self.__mqtt_client = None
 
@@ -25,7 +25,6 @@ class ROSToMQTT(ArgsSetters):
         self.args["mqtt"]["publish"]["topic"] = to_topic
         self.args["ros"]["wait_for_message"]["topic"] = from_topic
         self.args["ros"]["wait_for_message"]["topic_type"] = self.args["ros"]["data_class"]
-        self.args["ros"]["rate"]["hz"] = 2
 
         self.__rospy_rate = rospy.Rate(**self.args["ros"]["rate"])
 

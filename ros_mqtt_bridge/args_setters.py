@@ -13,14 +13,19 @@ class ArgsSetters(object):
         self.args = {
             "ros": {
                 "data_class": self.get_data_class_from_message_type(message_type),
-                "publisher": {},
                 "init_node": {},
+                "publisher": {},
+                "wait_for_message": {},
+                "rate": {
+                    "hz": 2
+                }
             },
             "mqtt": {
                 "client": {},
                 "connection": {
                     "host": ArgsSetters.DEFAULT_HOST,
                 },
+                "publish": {},
                 "subscribe": {},
                 "tls": None
             }
