@@ -15,7 +15,7 @@ with open(path.join(here, 'LICENSE'), encoding='utf-8') as f:
 
 setup(
     name='ros_mqtt_bridge',
-    version='0.2',
+    version='0.3',
     description='ros_mqtt_bridge provides bridge between ROS and MQTT(message serialized by JSON).',
     long_description=long_description,
     url='https://github.com/CPFL/ros_mqtt_bridge',
