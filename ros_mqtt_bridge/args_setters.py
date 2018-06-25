@@ -152,10 +152,6 @@ class AWSIoTArgsSetter(object):
         self.args["mqtt"]["configure_credentials"] = copy(locals())
         self.args["mqtt"]["configure_credentials"].pop("self")
 
-    def set_aws_iot_configureIAMCredentials(self, AWSAccessKeyID, AWSSecretAccessKey, AWSSessionToken=""):
-        self.args["mqtt"]["configure_iam_credentials"] = copy(locals())
-        self.args["mqtt"]["configure_iam_credentials"].pop("self")
-
     def set_aws_iot_configureLastWill(self, topic, payload, QoS, retain=False):
         self.args["mqtt"]["configure_last_will"] = copy(locals())
         self.args["mqtt"]["configure_last_will"].pop("self")
