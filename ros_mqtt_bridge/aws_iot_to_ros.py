@@ -55,7 +55,6 @@ class AWSIoTToROS(RospyArgsSetter, AWSIoTArgsSetter):
     def start(self):
         self.connect_ros()
         self.connect_mqtt()
-        self.__mqtt_client.loop_start()
         try:
             rospy.spin()
         except rospy.ROSInterruptException:
