@@ -15,5 +15,5 @@ args = parser.parse_args()
 
 if __name__ == '__main__':
     mqtt_to_ros = MQTTToROS(args.from_topic, args.to_topic, args.message_type)
-    mqtt_to_ros.set_mqtt_connection_args(host=args.host, port=args.port)
+    mqtt_to_ros.set_mqtt_connect_args(host=args.host, port=args.port)
     mqtt_to_ros.start()
