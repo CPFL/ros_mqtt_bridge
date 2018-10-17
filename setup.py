@@ -25,6 +25,7 @@ setup(
     packages=find_packages(exclude=["tests", "examples"]),
     install_requires=[
         "paho-mqtt==1.3.1",
+        "AWSIoTPythonSDK==1.3.1"
     ],
     test_suite="tests"
 )
